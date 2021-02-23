@@ -1,0 +1,19 @@
+{
+  "name": "projetsaas",
+  "version": "1.0.0",
+  "description": "api projet saas",
+  "main": "serveur.js",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "knex": "^0.21.18",
+    "nodemon": "^2.0.7",
+    "pg": "^8.5.1"
+  },
+  "scripts": {
+    "start": "nodemon serveur"
+  },
+  "author": "",
+  "license": "ISC"
+}
