@@ -29,7 +29,7 @@ app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }));
 app.use(bodyParser.text({ type: 'text/html' }));
 app.use(bodyParser.text({ type: 'text/plain' }));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 /* requette de test get qui retourne un status 200 OK */
 app.get('/test',(req, res, next)=>{
@@ -43,15 +43,16 @@ app.post('/insert/user', async (req, res, next)=>{
     try {
         users = await knex('users').insert({
             id_users: req.body.id_users,
-            email: "jacky@gamil",
-            password: "0000",
-            firstname: "jacky",
-            lastname: "jack",
+            email: req.body.email,
+            password: req.body.password,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
             cour_suivi: null,
             cour_enseigné: null, 
-            type: "users"
+            type: req.body.type
         });
     } catch (error) {
+        console.log(req.body);
         return res.status(400).json({
             statusCode: 400,
             message:error,
