@@ -66,5 +66,29 @@ app.post('/insert/user', async (req, res, next)=>{
     })
 });
 
+/* Requete d'insertion d'un nouveau cours */
+app.post('/insert/course', async (req, res, next)=>{
+    try {
+        course = await knex('course').insert({
+            id_course: req.body.id_course,
+            id_users: req.body.id_users,
+            course_name: req.body.course_name,
+            category: req.body.category,
+            description: req.body.description
+        });
+    } catch (error) {
+        console.log(req.body);
+        return res.status(400).json({
+            statusCode: 400,
+            message:error,
+        });
+    }
+    console.log(req.body);
+
+    return res.status(201).json({
+        statusCode: 201,
+        message:"Compte crée !!!!!!!!!!!"
+    })
+});
 
 module.exports = app;
