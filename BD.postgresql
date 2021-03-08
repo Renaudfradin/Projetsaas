@@ -1,0 +1,33 @@
+CREATE TABLE users(
+   id_users SERIAL PRIMARY KEY,
+   email VARCHAR(255),
+   password VARCHAR(255),
+   firstname VARCHAR(255),
+   lastname VARCHAR(255),
+   cour_suivi VARCHAR(255),
+   cour_enseigne VARCHAR(255),
+   type_user VARCHAR(255)
+); 
+
+
+CREATE TABLE course(
+   id_course SERIAL PRIMARY KEY,
+   id_users INT,
+   course_name VARCHAR(255),
+   category VARCHAR(255),
+   description VARCHAR(255)
+); 
+
+CREATE TABLE question(
+   id_question SERIAL PRIMARY KEY,
+   id_course INT,
+   question VARCHAR(255),
+   answer VARCHAR(255)
+);
+
+CREATE TABLE stat(
+   id_users INT,
+   id_course INT,
+   resultat VARCHAR(255),
+   nb_test VARCHAR(255)
+); 

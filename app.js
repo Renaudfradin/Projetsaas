@@ -48,8 +48,8 @@ app.post('/insert/user', async (req, res, next)=>{
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             cour_suivi: null,
-            cour_enseigné: null, 
-            type: req.body.type
+            cour_enseigne: null, 
+            type_user: req.body.type_user
         });
     } catch (error) {
         console.log(req.body);
@@ -87,7 +87,54 @@ app.post('/insert/course', async (req, res, next)=>{
 
     return res.status(201).json({
         statusCode: 201,
-        message:"Compte crée !!!!!!!!!!!"
+        message:"Cour crée !!!!!!!!!!!"
+    })
+});
+
+/* Requete d'insertion d'une nouvelle question */
+app.post('/insert/question', async (req, res, next)=>{
+    try {
+        course = await knex('question').insert({
+            id_question: req.body.id_question,
+            id_course: req.body.id_course,
+            question: req.body.question,
+            answer: req.body.answer,
+        });
+    } catch (error) {
+        console.log(req.body);
+        return res.status(400).json({
+            statusCode: 400,
+            message:error,
+        });
+    }
+    console.log(req.body);
+
+    return res.status(201).json({
+        statusCode: 201,
+        message:"Question crée !!!!!!!!!!!"
+    })
+});
+
+app.post('/insert/stat', async (req, res, next)=>{
+    try {
+        course = await knex('stat').insert({
+            id_users: req.body.id_users,
+            id_course: req.body.id_course,
+            resultat: req.body.resultat,
+            nb_test: req.body.nb_test,
+        });
+    } catch (error) {
+        console.log(req.body);
+        return res.status(400).json({
+            statusCode: 400,
+            message:error,
+        });
+    }
+    console.log(req.body);
+
+    return res.status(201).json({
+        statusCode: 201,
+        message:"Stat du cour 1 crée !!!!"
     })
 });
 
