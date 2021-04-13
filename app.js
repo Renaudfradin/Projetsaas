@@ -39,6 +39,7 @@ app.get('/test',(req, res, next)=>{
     })
 })
 
+/* Requete d'insertion d'un nouveau cours */
 app.post('/insert/user', async (req, res, next)=>{
     try {
         users = await knex('users').insert({
