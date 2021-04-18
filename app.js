@@ -23,12 +23,7 @@ app.use(bodyParser.text({ type: 'text/plain' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 /* requette de test get qui retourne un status 200 OK */
-app.get('/test',(req, res, next)=>{
-    res.status(200).json({ 
-        statusCode: 200,
-        message: "requette evonyer !!/OK",
-    })
-})
+
 
 /**Router qui regroupe toute les route des users /login, /getusers, /insert/user */
 app.use('/auth',routerusers);

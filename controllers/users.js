@@ -125,3 +125,11 @@ exports.login =  async (req, res, next)=>{
       };
     }
 };
+
+
+exports.test = (req, res, next)=>{
+  res.status(200).json({ 
+      statusCode: 200,
+      message: "requette evonyer !!/OK",
+  })
+}
