@@ -5,6 +5,7 @@ const controlleur = require('../controllers/users.js');
 /*fichier qui sert pour l'authentification */
 const auth = require('../auth.js');
 
+/* requette de test get qui retourne un status 200 OK */
 router.get('/test', controlleur.test);
 
 /* Requete d'insertion d'un nouveau utilisateur avec un mail unique*/

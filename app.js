@@ -22,7 +22,6 @@ app.use(bodyParser.text({ type: 'text/html' }));
 app.use(bodyParser.text({ type: 'text/plain' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-/* requette de test get qui retourne un status 200 OK */
 
 
 /**Router qui regroupe toute les route des users /login, /getusers, /insert/user */

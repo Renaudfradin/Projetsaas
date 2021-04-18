@@ -5,7 +5,7 @@ const jsonwebtoken = require("jsonwebtoken");
 /*/** connexion DB */
 const knex = require('../log-db.js');
 
-/* Requete d'insertion d'un nouveau utilisateur avec un mail unique*/
+/* Requete d'insertion d'un nouveau utilisateur avec un mail unique est envoie dd'un mail lors de l inscription*/
 exports.insertuser = async (req, res, next)=>{
     let usermail = [];
     try {
@@ -41,10 +41,44 @@ exports.insertuser = async (req, res, next)=>{
             });
         }
         console.log(req.body);
+
+        const mailjet = require ('node-mailjet')
+        .connect('bec04d2c048053d48f6a7cd19a218daf', '83b5722c1d9f9f56cc8e21539901dbed')
+        const request = mailjet
+        .post("send", {'version': 'v3.1'})
+        .request({
+          "Messages":[
+            {
+              "From": {
+                "Email": "renaud.fradin@hetic.net",
+                "Name": "RenaudF"
+              },
+              "To": [
+                {
+                  "Email": req.body.email,
+                  "Name": req.body.firstname
+                }
+              ],
+              "Subject": "Inscription",
+              "TextPart": "Bienvenue",
+              "HTMLPart": "<h3>Bienvenue"+ req.body.firstname + " " + req.body.lastname + "</h3><br><p>Votre email : "+ req.body.email +"<p/>",
+              "CustomID": "AppGettingStartedTest"
+            }
+          ]
+        })
+        request
+          .then((result) => {
+            console.log(result.body)
+          })
+          .catch((err) => {
+            console.log(err.statusCode)
+          })
+
         return res.status(201).json({
             statusCode: 201,
             message:"Compte crée !!!!!!!!!!!"
         })
+        
     } else {
         return res.status(400).json({
             statusCode: 400,
