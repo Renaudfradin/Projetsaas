@@ -1,17 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-
-/** connexion DB */
-const knex = require("knex")({
-    client :"pg",
-    connection:{
-        connectionString: 'postgres://ycpjfrsckfldpd:90fc378b2b129d9a3ff59cde6192b89ab247904463de7e4268fd5aa4c8d33805@ec2-54-78-127-245.eu-west-1.compute.amazonaws.com:5432/d1r87ic6jllnsv',
-        ssl:{
-            rejectUnauthorized: false,
-        }
-    },
-});
+/*router des requette users*/
+const routerusers = require('./routes/users.js');
 
 /*headers de la requette */
 app.use((req, res, next) => {
@@ -29,7 +20,7 @@ app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }));
 app.use(bodyParser.text({ type: 'text/html' }));
 app.use(bodyParser.text({ type: 'text/plain' }));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 /* requette de test get qui retourne un status 200 OK */
 app.get('/test',(req, res, next)=>{
@@ -39,33 +30,9 @@ app.get('/test',(req, res, next)=>{
     })
 })
 
-/* Requete d'insertion d'un nouveau cours */
-app.post('/insert/user', async (req, res, next)=>{
-    try {
-        users = await knex('users').insert({
-            id_users: req.body.id_users,
-            email: req.body.email,
-            password: req.body.password,
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            cour_suivi: null,
-            cour_enseigne: null, 
-            type_user: req.body.type_user
-        });
-    } catch (error) {
-        console.log(req.body);
-        return res.status(400).json({
-            statusCode: 400,
-            message:error,
-        });
-    }
-    console.log(req.body);
+/**Router qui regroupe toute les route des users /login, /getusers, /insert/user */
+app.use('/auth',routerusers);
 
-    return res.status(201).json({
-        statusCode: 201,
-        message:"Compte crée !!!!!!!!!!!"
-    })
-});
 
 /* Requete d'insertion d'un nouveau cours */
 app.post('/insert/course', async (req, res, next)=>{
