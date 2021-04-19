@@ -138,10 +138,11 @@ exports.login =  async (req, res, next)=>{
       const match = await bcrypt.compare(req.body.passwords, userlog[0].passwords);
       console.log(match);
       if (match) {
-        return res.status(200).json({
+        return res.status(200).set("typeusers",'test').json({
           statusCode: 200,
           message: 'succcesful / OK',
           userId: userlog[0].id,
+          "typeusers": userlog[0].type_user,
           token: jsonwebtoken.sign(
             { userId: userlog[0].id }, //truc a encoder
             'RANDOM_TOKEN_SECRETRANDOM_TOKEN_SECRETRANDOM_TOKEN_SECRETRANDOM_TOKEN_SECRET',  //cle d'encodage
@@ -164,6 +165,6 @@ exports.login =  async (req, res, next)=>{
 exports.test = (req, res, next)=>{
   res.status(200).json({ 
       statusCode: 200,
-      message: "requette evonyer !!/OK",
+      message: "requette evonyer users!!/OK",
   })
 }

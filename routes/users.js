@@ -6,7 +6,7 @@ const controlleur = require('../controllers/users.js');
 const auth = require('../auth.js');
 
 /* requette de test get qui retourne un status 200 OK */
-router.get('/test', controlleur.test);
+router.get('/test',auth, controlleur.test);
 
 /* Requete d'insertion d'un nouveau utilisateur avec un mail unique*/
 router.post('/insert/user',auth, controlleur.insertuser);
@@ -15,6 +15,6 @@ router.post('/insert/user',auth, controlleur.insertuser);
 router.post('/login',  controlleur.login);
 
 /*Requete d'affichage de tous les utilisateurs*/
-router.get('/getusers', controlleur.getusers);
+router.get('/getusers', auth, controlleur.getusers);
 
 module.exports = router;
