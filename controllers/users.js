@@ -5,6 +5,9 @@ const jsonwebtoken = require("jsonwebtoken");
 /*/** connexion DB */
 const knex = require('../log-db.js');
 
+var Analytics = require('analytics-node');
+var analytics = new Analytics('5EDQT9nCxznLZ6Dx51OQiyeaBHWwgr7p');
+
 /* Requete d'insertion d'un nouveau utilisateur avec un mail unique est envoie dd'un mail lors de l inscription*/
 exports.insertuser = async (req, res, next)=>{
     let usermail = [];
@@ -34,13 +37,25 @@ exports.insertuser = async (req, res, next)=>{
                 type_user: req.body.type_user
             });
         } catch (error) {
-            console.log(req.body);
+            //console.log(req.body);
             return res.status(400).json({
                 statusCode: 400,
                 message:error,
             });
         }
-        console.log(req.body);
+
+        let iduss = [];
+        try {
+          iduss = await knex('users').where({
+            email: req.body.email,
+          }).select('id_users')
+        } catch (error) {
+           return res.status(400).json({
+                statusCode: 400,
+                message:error,
+            });
+        }
+        //console.log(iduss[0].id_users);
 
         const mailjet = require ('node-mailjet')
         .connect('bec04d2c048053d48f6a7cd19a218daf', '83b5722c1d9f9f56cc8e21539901dbed')
@@ -73,7 +88,14 @@ exports.insertuser = async (req, res, next)=>{
           .catch((err) => {
             console.log(err.statusCode)
           })
-
+        analytics.identify({
+            userId: iduss[0].id_users,
+            traits:{
+              name: req.body.firstname,
+              lastname: req.body.lastname,
+              email:req.body.email
+            }
+        });
         return res.status(201).json({
             statusCode: 201,
             message:"Compte crée !!!!!!!!!!!"
