@@ -2,7 +2,7 @@
 const bcrypt = require("bcrypt");
 /*librairies qui sert a generer des token */
 const jsonwebtoken = require("jsonwebtoken");
-/*/** connexion DB */
+/** connexion DB */
 const knex = require('../log-db.js');
 
 var Analytics = require('analytics-node');
@@ -24,9 +24,11 @@ exports.insertuser = async (req, res, next)=>{
             }],
         });
     }
+
     if (usermail.length == 0) {
         try {
-            users = await knex('users').insert({
+            if (req.body.type_user == "prof" || req.body.type_user == "élève") {
+              users = await knex('users').insert({
                 id_users: req.body.id_users,
                 email: req.body.email,
                 passwords: bcrypt.hashSync(req.body.passwords, bcrypt.genSaltSync(10)),
@@ -35,9 +37,14 @@ exports.insertuser = async (req, res, next)=>{
                 cour_suivi: null,
                 cour_enseigne: null, 
                 type_user: req.body.type_user
-            });
+              });
+            } else {
+              return res.status(400).json({
+                statusCode: 400,
+                message:"Veuillez choisir soit le role élève ou le role prof",
+              });
+            }
         } catch (error) {
-            //console.log(req.body);
             return res.status(400).json({
                 statusCode: 400,
                 message:error,
@@ -55,7 +62,6 @@ exports.insertuser = async (req, res, next)=>{
                 message:error,
             });
         }
-        //console.log(iduss[0].id_users);
 
         const mailjet = require ('node-mailjet')
         .connect('bec04d2c048053d48f6a7cd19a218daf', '83b5722c1d9f9f56cc8e21539901dbed')
@@ -164,9 +170,10 @@ exports.login =  async (req, res, next)=>{
           statusCode: 200,
           message: 'succcesful / OK',
           userId: userlog[0].id,
+          userId1: userlog[0].id,
           "typeusers": userlog[0].type_user,
           token: jsonwebtoken.sign(
-            { userId: userlog[0].id }, //truc a encoder
+            { userId: userlog[0].id ,name: userlog[0].type_user, email:userlog[0].email }, //truc a encoder
             'RANDOM_TOKEN_SECRETRANDOM_TOKEN_SECRETRANDOM_TOKEN_SECRETRANDOM_TOKEN_SECRET',  //cle d'encodage
             { expiresIn: '1h' } //dure du token
           )
@@ -185,8 +192,8 @@ exports.login =  async (req, res, next)=>{
 
 
 exports.test = (req, res, next)=>{
-  res.status(200).json({ 
+    res.status(200).json({ 
       statusCode: 200,
       message: "requette evonyer users!!/OK",
-  })
+  })  
 }

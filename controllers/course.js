@@ -1,28 +1,30 @@
 /** connexion DB */
 const knex = require('../log-db.js');
+const jsonwebtoken = require("jsonwebtoken");
 
 /* Requete d'insertion d'un nouveau cours , il faut etre connecter et il faut avoir le type_users prof*/
 exports.insertcourse = async (req, res, next)=>{
-    let typeuser = [];
-    try {
-        typeuser = await knex('users').where({
-            type_user: "prof"
-        })
-    } catch (error) {
-        return res.status(500).json({
-            statusCode: 500,
-            message: 'Internal server errors',
-            errors:[{
-                message:'Erreur interne du serveur.cour'
-            }]
-        })
-    }
+    const token = req.headers.authorization.split(' ')[1];
+    const deconder = jsonwebtoken.decode(token,{complete: true}); 
 
-    if (typeuser.length != 0) {
+    if (deconder.payload.name == "prof") {
+
+        let iduss = [];
+        try {
+            iduss = await knex('users').where({
+                email: deconder.payload.email,
+            }).select('id_users')
+        } catch (error) {
+            return res.status(400).json({
+                statusCode: 400,
+                message:error,
+            });
+        }
+
         let usersid = [];
         try {
             usersid = await knex('users').where({
-                id_users: req.body.id_users
+                id_users: iduss[0].id_users,
             })
         } catch (error) {
             return res.status(500).json({
@@ -34,11 +36,11 @@ exports.insertcourse = async (req, res, next)=>{
             })
         }
 
-        if (usersid != 0) {
+        if (usersid.length != 0) {
             try {
                 course = await knex('course').insert({
                     id_course: req.body.id_course,
-                    id_users: req.body.id_users,
+                    id_users: iduss[0].id_users,
                     course_name: req.body.course_name,
                     category: req.body.category,
                     description: req.body.description
@@ -64,29 +66,17 @@ exports.insertcourse = async (req, res, next)=>{
     } else {
         return res.status(400).json({
             statusCode: 400,
-            message:"Tu n'est pa un professeur !!!!!!!!!!!"
+            message:"Tu n'est pas un professeur !!!!!!!!!!!"
         })
-    }  
+    }
 };
 
 /* Requete de supression d'un cours , il faut etre connecter et  il faut avoir le type_users prof*/
 exports.deletecourse = async (req, res, next)=>{
-    let typeuser = [];
-    try {
-        typeuser = await knex('users').where({
-            type_user: "prof"
-        })
-    } catch (error) {
-        return res.status(500).json({
-            statusCode: 500,
-            message: 'Internal server errors',
-            errors:[{
-                message:'Erreur interne du serveur.cour'
-            }]
-        })
-    }
+    const token = req.headers.authorization.split(' ')[1];
+    const deconder = jsonwebtoken.decode(token,{complete: true}); 
 
-    if (typeuser.length != 0){
+    if (deconder.payload.name == "prof") {
         let coursid = [];
         try {
             coursid = await knex('course').where({
@@ -134,22 +124,10 @@ exports.deletecourse = async (req, res, next)=>{
 
 /* Requete d'insertion d'une nouvelle question , il faut etre connecter et il faut avoir le type_users prof*/
 exports.insertquestion = async (req, res, next)=>{
-    let typeuser = [];
-    try {
-        typeuser = await knex('users').where({
-            type_user: "prof"
-        })
-    } catch (error) {
-        return res.status(500).json({
-            statusCode: 500,
-            message: 'Internal server errors',
-            errors:[{
-                message:'Erreur interne du serveur.cour'
-            }]
-        })
-    }
+    const token = req.headers.authorization.split(' ')[1];
+    const deconder = jsonwebtoken.decode(token,{complete: true}); 
 
-    if (typeuser.length != 0){
+    if (deconder.payload.name == "prof") {
         let coursid = [];
     try {
         coursid = await knex('course').where({
