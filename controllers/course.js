@@ -2,6 +2,9 @@
 const knex = require('../log-db.js');
 const jsonwebtoken = require("jsonwebtoken");
 
+var Analytics = require('analytics-node');
+var analytics = new Analytics('5EDQT9nCxznLZ6Dx51OQiyeaBHWwgr7p');
+
 /* Requete d'insertion d'un nouveau cours , il faut etre connecter et il faut avoir le type_users prof*/
 exports.insertcourse = async (req, res, next)=>{
     const token = req.headers.authorization.split(' ')[1];
@@ -45,6 +48,18 @@ exports.insertcourse = async (req, res, next)=>{
                     category: req.body.category,
                     description: req.body.description
                 });
+                courses = await knex('course').where({id_users: iduss[0].id_users})
+
+                const idcour = [];
+                for (var i = 0; i < courses.length; i++) {
+                    //console.log(course[i].id_course);
+                    idcour.push(courses[i].id_course)
+                }
+                console.log(idcour);
+                idcour.push(req.body.id_course);
+                idcour.pop();
+                courenseigne = await knex('users').where('id_users', courses[0].id_users).update({cour_enseigne:idcour});
+
             } catch (error) {
                 console.log(req.body);
                 return res.status(400).json({
@@ -238,9 +253,17 @@ exports.coursesprof = async (req, res, next)=>{
         if (course.length == 0) {
             return res.status(400).json({
                 statusCode: 400,
-                message: "Tu na pa de cour ",
+                message: "Tu na pa de cour M professeur",
             });
         } else {
+            const idcour = [];
+            for (var i = 0; i < course.length; i++) {
+                //console.log(course[i].id_course);
+                idcour.push(course[i].id_course)
+            }
+            console.log(idcour);
+            courenseigne = await knex('users').where('id_users', course[0].id_users).update({cour_enseigne:idcour});
+
             return res.status(200).json({
                 statusCode: 200,
                 message: 'succcesful / OK',

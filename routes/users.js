@@ -17,4 +17,6 @@ router.post('/login',  controlleur.login);
 /*Requete d'affichage de tous les utilisateurs*/
 router.get('/getusers', auth, controlleur.getusers);
 
+//router.post('/coursuivi/:id', auth,controlleur.getusers);
+
 module.exports = router;
