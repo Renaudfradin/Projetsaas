@@ -32,10 +32,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 /**Router qui regroupe toute les route des users /test, /login, /getusers, /insert/user */
 app.use('/auth', routerusers);
 
-/**Router qui regroupe toute les route des course /test, /insert/course, /insert/question, /delete/course/:id */
+/**Router qui regroupe toute les route des course /test, /insert/course, /insert/question, /delete/course/:id ,/courses ,/coursesprof/:id*/
 app.use('/course', routercouse);
 
-
+app.get('/',(req, res, next)=>{
+    return res.status(200).json({
+        statusCode: 200,
+        message:"Bonjour bienvenue l'API WeLearn du groupe 10"
+    })
+})
 
 app.post('/insert/stat', async (req, res, next)=>{
     try {
