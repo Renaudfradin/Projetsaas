@@ -38,7 +38,7 @@ app.use('/course', routercouse);
 app.get('/',(req, res, next)=>{
     return res.status(200).json({
         statusCode: 200,
-        message:"Bonjour bienvenue l'API WeLearn du groupe 10"
+        message:"Bonjour bienvenue sur l'API WeLearn du groupe 10"
     })
 })
 
