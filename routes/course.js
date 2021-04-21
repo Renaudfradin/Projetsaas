@@ -21,6 +21,9 @@ router.delete('/delete/course/:id', auth, controlleur.deletecourse);
 router.get('/courses', auth, controlleur.courses);
 
 /* Requete d'affichage des cours celon le prof connecter, il faut etre connecter*/
-router.get('/coursesprof/:id', auth, controlleur.coursesprof);
+router.get('/coursesprof', auth, controlleur.coursesprof);
+
+/* Requete de modifications d'un cours celon le cour selectionner et il faut etre connecter*/
+router.put('/updatecourse/:id', auth, controlleur.updatecourse);
 
 module.exports = router;

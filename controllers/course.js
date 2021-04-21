@@ -144,47 +144,47 @@ exports.insertquestion = async (req, res, next)=>{
 
     if (deconder.payload.name == "prof") {
         let coursid = [];
-    try {
-        coursid = await knex('course').where({
-            id_course: req.body.id_course
-        })
-    } catch (error) {
-        return res.status(500).json({
-            statusCode: 500,
-            message: 'Internal server errors',
-            errors:[{
-                message:'Erreur interne du serveur.ques'
-            }]
-        })
-    }
-    
-    if (coursid.length != 0) {
         try {
-            course = await knex('question').insert({
-                id_question: req.body.id_question,
-                id_course: req.body.id_course,
-                question: req.body.question,
-                answer: req.body.answer,
-            });
+            coursid = await knex('course').where({
+                id_course: req.body.id_course
+            })
         } catch (error) {
-            console.log(req.body);
-            return res.status(400).json({
-                statusCode: 400,
-                message:error,
-            });
-        }
-        console.log(req.body);
-    
-        return res.status(201).json({
-            statusCode: 201,
-            message:"Question crée !!!!!!!!!!!"
-        })
-        } else {
-            return res.status(400).json({
-                statusCode: 400,
-                message:"Le cour n'existe pas !!!!!!!!!!!"
+            return res.status(500).json({
+                statusCode: 500,
+                message: 'Internal server errors',
+                errors:[{
+                    message:'Erreur interne du serveur.ques'
+                }]
             })
         }
+    
+        if (coursid.length != 0) {
+            try {
+                course = await knex('question').insert({
+                    id_question: req.body.id_question,
+                    id_course: req.body.id_course,
+                    question: req.body.question,
+                    answer: req.body.answer,
+                });
+            } catch (error) {
+                console.log(req.body);
+                return res.status(400).json({
+                    statusCode: 400,
+                    message:error,
+                });
+            }
+            console.log(req.body);
+        
+            return res.status(201).json({
+                statusCode: 201,
+                message:"Question crée !!!!!!!!!!!"
+            })
+            } else {
+                return res.status(400).json({
+                    statusCode: 400,
+                    message:"Le cour n'existe pas !!!!!!!!!!!"
+                })
+            }
     }else{
         return res.status(400).json({
             statusCode: 400,
@@ -219,67 +219,142 @@ exports.courses = async (req, res, next)=>{
 
 /* Requete d'affichage des cours celon le prof connecter, il faut etre connecter*/
 exports.coursesprof = async (req, res, next)=>{
-    let idusers = [];
+    const token = req.headers.authorization.split(' ')[1];
+    const deconder = jsonwebtoken.decode(token,{complete: true}); 
+
+    let userid = [];
     try {
-        idusers = await knex('users').where({
-            id_users: req.params.id
+      userid = await knex('users').where({
+            email: deconder.payload.email
+      }).select('id_users');  
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            message: 'Internal Server Error',
+            errors:[{
+              message:'Erreur interne du serveur.',
+            }],
+        });
+    }
+
+    let course = [];
+    try {
+        course = await knex('course').where({
+            id_users: userid[0].id_users
         })
     } catch (error) {
         return res.status(500).json({
             statusCode: 500,
             message: 'Internal server errors',
             errors:[{
-                message:'Erreur interne du serveur.cour'
+                message:'Erreur interne du serveur.'
             }]
         })
     }
 
-    if (idusers.length != 0) {
-        let course = [];
-        try {
-            course = await knex('course').where({
-                id_users: req.params.id
-            })
-        } catch (error) {
-            return res.status(500).json({
-                statusCode: 500,
-                message: 'Internal server errors',
-                errors:[{
-                    message:'Erreur interne du serveur.cour'
-                }]
-            })
-        }
-
-        if (course.length == 0) {
-            return res.status(400).json({
-                statusCode: 400,
-                message: "Tu na pa de cour M professeur",
-            });
-        } else {
-            const idcour = [];
-            for (var i = 0; i < course.length; i++) {
-                //console.log(course[i].id_course);
-                idcour.push(course[i].id_course)
-            }
-            console.log(idcour);
-            courenseigne = await knex('users').where('id_users', course[0].id_users).update({cour_enseigne:idcour});
-
-            return res.status(200).json({
-                statusCode: 200,
-                message: 'succcesful / OK',
-                Cours: course,
-            });
-        }
-    } else {
+    if (course.length == 0) {
         return res.status(400).json({
             statusCode: 400,
-            message: "Le professeur n'existe pas",
+            message: "Tu na pas de cours M le professeur",
+        });
+    } else {
+        const idcour = [];
+        for (var i = 0; i < course.length; i++) {
+            //console.log(course[i].id_course);
+            idcour.push(course[i].id_course)
+        }
+        //console.log(idcour);
+        courenseigne = await knex('users').where('id_users', course[0].id_users).update({cour_enseigne:idcour});
+        return res.status(200).json({
+            statusCode: 200,
+            message: 'succcesful / OK',
+            Cours: course,
         });
     }
 
-
     
 }
+
+
+
+
+/* Requete de modifications d'un cours celon le cour selectionner et il faut etre connecter*/
+exports.updatecourse = async (req, res, next)=>{
+    const token = req.headers.authorization.split(' ')[1];
+    const deconder = jsonwebtoken.decode(token,{complete: true}); 
+
+    let usermail = [];
+    try {
+      usermail = await knex('users').where({
+            email: deconder.payload.email
+      }).select('id_users');  
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            message: 'Internal Server Error',
+            errors:[{
+              message:'Erreur interne du serveur',
+            }],
+        });
+    }
+
+    let courseid = [];
+    try {
+      courseid = await knex('course').where({
+            id_course: req.params.id
+      }).select('id_users');  
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            message: 'Internal Server Error',
+            errors:[{
+              message:'Erreur interne du serveur.',
+            }],
+        });
+    }
+    if (courseid.length == 0) {
+        return res.status(400).json({
+            statusCode: 400,
+            message:"Le cour n'existe pas !!!!!!!!!!!"
+        })
+    } else {
+        if ( usermail[0].id_users != courseid[0].id_users) {
+            return res.status(400).json({
+                statusCode: 400,
+                message:"Cela n'est pas votre cour !!!!!!!!!!!"
+            })
+        }else{
+            if (deconder.payload.name == "prof") {
+                try {
+                    course = await knex('course').where('id_course',req.params.id).update({
+                        course_name: req.body.course_name,
+                        category: req.body.category,
+                        description: req.body.description
+                    })
+                } catch (error) {
+                    return res.status(400).json({
+                        statusCode: 400,
+                        message: 'Bad Request',
+                        errors:[{
+                            message:'failed to query database',
+                        }],
+                    });
+                }
+                    console.log(req.body);
+                    return res.status(200).json({
+                        statusCode: 200,
+                        message: 'succcesful / cour modifier'
+                    });
+            } else {
+                return res.status(400).json({
+                    statusCode: 400,
+                    message:"Tu n'est pas un professeur !!!!!!!!!!!"
+                })
+            }
+        }
+    }
+    
+};
 
 /* Requette de test get qui retourne un status 200 OK */
 exports.test = (req, res, next)=>{
