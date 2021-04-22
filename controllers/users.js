@@ -1,5 +1,5 @@
 /*librairies qui sert a cripter je l'utiliser pour cripter le mdp*/
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 /*librairies qui sert a generer des token */
 const jsonwebtoken = require("jsonwebtoken");
 /** connexion DB */
